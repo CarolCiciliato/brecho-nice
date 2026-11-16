@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRECHÓ NICE</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        niceBlue: {
+                            50: '#f4f7fb',
+                            100: '#e4ebf3',
+                            500: '#315b91',
+                            700: '#1e3a63',
+                            900: '#122643',
+                            logo: '#1B3B6F'
+                        },
+                        niceBg: '#f6f8fb'
+                    },
+                    fontFamily: {
+                        logo: ['Cinzel', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-banner {
+            background: linear-gradient(135deg, #1B3B6F 0%, #274a78 50%, #122643 100%);
+        }
+    </style>
+</head>
+<body class="bg-niceBg text-slate-800 font-sans flex flex-col min-h-screen">
+
+    <!-- Top Banner Info Bar -->
+    <div class="bg-niceBlue-logo text-white text-xs font-semibold py-2 px-4 text-center tracking-wide">
+        ✨ Bem-vindo ao Brechó Nice! Moda única, sustentável e acessível. Visite nossa loja física ou faça seu pedido online!
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-24">
+                
+                <!-- Logo & Brand Header -->
+                <div class="flex items-center gap-4 cursor-pointer" onclick="resetFilters()">
+                    <div class="w-20 h-20 sm:w-24 sm:h-20 lg:w-36 lg:h-24 rounded-xl bg-niceBlue-logo text-white flex items-center justify-center font-logo text-2xl font-bold border-2 border-niceBlue-100 shadow-sm overflow-hidden flex-shrink-0">
+                        <img src="images/logo.jpg" alt="Logo do Brechó Nice" class="w-full h-full object-contain" onerror="this.remove(); this.parentElement.querySelector('.logo-fallback').classList.remove('hidden');">
+                        <span class="logo-fallback hidden">BN</span>
+                    </div>
+                    <div>
+                        <h1 class="font-logo text-2xl sm:text-3xl font-extrabold tracking-wider text-niceBlue-logo leading-tight">BRECHÓ NICE</h1>
+                        <p class="text-xs text-niceBlue-500 font-bold uppercase tracking-widest">Garimpos & Moda Única</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Filters -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-4">
+                    <button onclick="setCategory('')" class="px-4 py-2 text-sm font-bold text-slate-700 hover:text-niceBlue-500 hover:bg-niceBlue-50 rounded-full transition">Todos os Produtos</button>
+                    <button onclick="setCategory('Roupas')" class="px-4 py-2 text-sm font-bold text-slate-700 hover:text-niceBlue-500 hover:bg-niceBlue-50 rounded-full transition">Roupas</button>
+                    <button onclick="setCategory('Acessórios')" class="px-4 py-2 text-sm font-bold text-slate-700 hover:text-niceBlue-500 hover:bg-niceBlue-50 rounded-full transition">Acessórios</button>
+                    <button onclick="setCategory('Calçados')" class="px-4 py-2 text-sm font-bold text-slate-700 hover:text-niceBlue-500 hover:bg-niceBlue-50 rounded-full transition">Calçados</button>
+                </nav>
+
+                <!-- Actions: Cart & Admin -->
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleCartModal()" class="relative p-2.5 text-niceBlue-logo hover:bg-niceBlue-50 rounded-full transition">
+                        <i class="fa-solid fa-bag-shopping text-2xl"></i>
+                        <span id="cart-count" class="absolute top-0 right-0 bg-niceBlue-logo text-white text-xs font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow">0</span>
+                    </button>
+                    
+                    <button id="admin-btn" onclick="openAdminModal()" class="flex items-center gap-2 bg-niceBlue-logo text-white px-4 py-2.5 rounded-full text-xs font-bold hover:bg-niceBlue-700 shadow-md transition">
+                        <i class="fa-solid fa-user-shield text-niceBlue-100"></i>
+                        <span>Painel Adm</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subcategories Bar -->
+        <div class="bg-niceBlue-900 text-white py-2.5 shadow-inner">
+            <div class="max-w-7xl mx-auto px-4 flex justify-center gap-6 sm:gap-10 text-xs sm:text-sm font-bold tracking-wide">
+                <button onclick="setSubcategory('')" class="hover:text-niceBlue-100 transition">✨ TODOS OS SEGMENTOS</button>
+                <button onclick="setSubcategory('Mulheres')" class="hover:text-niceBlue-100 transition"><i class="fa-solid fa-venus mr-1"></i> FEMININO</button>
+                <button onclick="setSubcategory('Homens')" class="hover:text-niceBlue-100 transition"><i class="fa-solid fa-mars mr-1"></i> MASCULINO</button>
+                <button onclick="setSubcategory('Crianças')" class="hover:text-niceBlue-100 transition"><i class="fa-solid fa-child mr-1"></i> INFANTIL</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section / Store Showcase -->
+    <section class="gradient-banner text-white py-12 px-4 shadow-inner">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            <div class="lg:col-span-7 space-y-4">
+                <div class="flex flex-col sm:flex-row items-center gap-6">
+                    <img src="images/foto%20da%20nice.jpg" alt="Foto da Nice" class="w-44 h-52 sm:w-52 sm:h-60 object-cover rounded-xl border border-white/30 shadow-xl">
+                    <p class="min-w-0 flex-1 text-center font-logo text-2xl sm:text-3xl font-bold leading-snug text-white">
+                        Roupas à partir de <span class="block text-3xl sm:text-4xl text-niceBlue-100">5 reais</span>
+                    </p>
+                </div>
+                <a href="https://wa.me/5511997464313?text=Ola%2C%20quero%20fazer%20um%20pedido" target="_blank" rel="noopener noreferrer" aria-label="Fazer pedido pelo WhatsApp no número (11) 99746-4313" class="inline-flex max-w-full items-center gap-4 bg-white text-niceBlue-logo px-5 py-3 rounded-xl shadow-lg transition hover:bg-niceBlue-50 focus:outline-none focus:ring-4 focus:ring-white/30">
+                    <span class="w-12 h-12 rounded-full bg-niceBlue-50 flex items-center justify-center text-2xl flex-shrink-0"><i class="fa-brands fa-whatsapp"></i></span>
+                    <span>
+                        <span class="block text-xs font-bold uppercase tracking-wide text-niceBlue-500">Faça seu pedido pelo WhatsApp</span>
+                        <span class="block text-xl sm:text-2xl font-extrabold">(11) 99746-4313</span>
+                    </span>
+                </a>
+                <div class="pt-2 flex flex-wrap gap-4 text-xs font-bold">
+                    <span class="flex items-center gap-2 bg-white/10 px-3 py-2 rounded-lg backdrop-blur-sm border border-white/20"><i class="fa-solid fa-check text-niceBlue-100"></i> Moda Feminina, Masculina e Infantil</span>
+                    <span class="flex items-center gap-2 bg-white/10 px-3 py-2 rounded-lg backdrop-blur-sm border border-white/20"><i class="fa-solid fa-check text-niceBlue-100"></i> Atualização Diária de Peças</span>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 relative">
+                <div class="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white/20 bg-niceBlue-700 h-64 sm:h-80 flex items-center justify-center">
+                    <img src="images/Imagem%20do%20brecho.jpg" alt="Imagem do Brechó Nice" class="w-full h-full object-cover" onerror="this.style.display='none'; document.getElementById('store-placeholder').classList.remove('hidden');">
+                    <div id="store-placeholder" class="hidden text-center p-6 space-y-2">
+                        <i class="fa-solid fa-store text-5xl text-niceBlue-100"></i>
+                        <h3 class="font-logo font-bold text-xl">Brechó Nice</h3>
+                        <p class="text-xs text-niceBlue-100">Imagem da loja indisponível.</p>
+                    </div>
+                    <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 text-white">
+                        <p class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-store text-niceBlue-100"></i> Nossa Loja Física</p>
+                        <p class="text-xs text-slate-200">Venha nos visitar e conferir as novidades na arara!</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <!-- Controls: Search & Filters -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-8 flex flex-col md:flex-row gap-4 justify-between items-center">
+            <div class="relative w-full md:w-96">
+                <input type="text" id="search-input" oninput="renderProducts()" placeholder="Buscar roupas, sapatos, bolsas..." 
+                       class="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-niceBlue-500 bg-slate-50">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+            </div>
+
+            <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                <select id="size-filter" onchange="renderProducts()" class="px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-niceBlue-500">
+                    <option value="">Todos os Tamanhos</option>
+                    <option value="PP">PP</option>
+                    <option value="P">P</option>
+                    <option value="M">M</option>
+                    <option value="G">G</option>
+                    <option value="GG">GG</option>
+                    <option value="36">36</option>
+                    <option value="38">38</option>
+                    <option value="40">40</option>
+                    <option value="42">42</option>
+                    <option value="Único">Único</option>
+                </select>
+
+                <select id="sort-filter" onchange="renderProducts()" class="px-3.5 py-2.5 border border-slate-300 rounded-xl text-sm bg-white font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-niceBlue-500">
+                    <option value="newest">Mais Recentes</option>
+                    <option value="price-asc">Menor Preço</option>
+                    <option value="price-desc">Maior Preço</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Category Breadcrumb Status -->
+        <div id="filter-status" class="mb-6 hidden flex items-center gap-2 text-sm text-slate-600 bg-niceBlue-50 p-3.5 rounded-xl border border-niceBlue-100 shadow-sm">
+            <span class="font-semibold text-niceBlue-logo">Filtro Ativo:</span>
+            <span id="filter-badge" class="font-bold text-niceBlue-logo bg-white px-3 py-1 rounded-full border border-niceBlue-100 text-xs"></span>
+            <button onclick="resetFilters()" class="ml-auto text-xs font-bold text-niceBlue-logo hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-rotate-left"></i> Limpar Filtros
+            </button>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Dynamic products -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+            <i class="fa-solid fa-shirt text-6xl text-niceBlue-100 mb-4"></i>
+            <h3 class="text-xl font-logo text-slate-800 font-bold mb-1">Nenhum garimpo encontrado</h3>
+            <p class="text-sm text-slate-500">Tente buscar por outro termo ou alterar os filtros selecionados.</p>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-niceBlue-900 text-white mt-16 pt-12 pb-8 border-t border-niceBlue-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-lg bg-niceBlue-logo text-white flex items-center justify-center font-logo font-bold border border-niceBlue-100 shadow-sm overflow-hidden flex-shrink-0">
+                        <img src="images/logo.jpg" alt="Logo do Brechó Nice" class="w-full h-full object-contain" onerror="this.remove(); this.parentElement.querySelector('.logo-fallback').classList.remove('hidden');">
+                        <span class="logo-fallback hidden text-xs">BN</span>
+                    </div>
+                    <h2 class="font-logo text-2xl font-bold tracking-wider text-white">BRECHÓ NICE</h2>
+                </div>
+                <p class="text-xs text-niceBlue-100 leading-relaxed">
+                    Sua opção de moda circular, consciente e acessível. Vestindo a família toda com estilo e economia!
+                </p>
+            </div>
+            
+            <div class="space-y-2 text-xs text-niceBlue-100">
+                <h4 class="font-bold text-sm text-white uppercase tracking-wider mb-2">Categorias Principais</h4>
+                <p>&bull; Roupas Femininas, Masculinas e Infantis</p>
+                <p>&bull; Sapatos & Calçados Diversos</p>
+                <p>&bull; Acessórios e Bolsas</p>
+            </div>
+
+            <div class="space-y-2 text-xs text-niceBlue-100">
+                <h4 class="font-bold text-sm text-white uppercase tracking-wider mb-2">Atendimento & Loja Física</h4>
+                <p class="flex items-center gap-2"><i class="fa-solid fa-store text-niceBlue-100"></i> Visite nossa loja física para ver todas as peças!</p>
+                <a href="https://wa.me/5511997464313" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 hover:text-white transition"><i class="fa-brands fa-whatsapp text-niceBlue-100"></i> WhatsApp: (11) 99746-4313</a>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 pt-6 border-t border-niceBlue-700 text-center text-xs text-niceBlue-100">
+            &copy; 2026 Brechó Nice. Todos os direitos reservados.
+        </div>
+    </footer>
+
+    <!-- MODAL: LOGIN / PAINEL ADM -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            
+            <div class="bg-niceBlue-logo text-white p-4 px-6 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-user-shield text-niceBlue-100"></i>
+                    <h3 class="font-logo text-lg font-bold">Painel Administrativo - Brechó Nice</h3>
+                </div>
+                <button onclick="closeAdminModal()" class="text-slate-300 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-grow">
+                <!-- LOGIN FORM -->
+                <div id="login-section" class="max-w-md mx-auto py-8">
+                    <h4 class="text-center font-logo text-2xl text-niceBlue-logo font-bold mb-6">Acesso Restrito ao Painel</h4>
+                    <form onsubmit="handleLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Usuário</label>
+                            <input type="text" id="login-user" required class="w-full p-3 border rounded-xl border-slate-300 focus:ring-2 focus:ring-niceBlue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Senha</label>
+                            <input type="password" id="login-pass" required class="w-full p-3 border rounded-xl border-slate-300 focus:ring-2 focus:ring-niceBlue-500 outline-none">
+                        </div>
+                        <div id="login-error" class="hidden text-red-600 text-sm font-bold text-center">Usuário ou senha incorretos.</div>
+                        <button type="submit" class="w-full bg-niceBlue-logo text-white py-3 rounded-xl font-bold hover:bg-niceBlue-700 transition shadow-md">Entrar no Painel</button>
+                    </form>
+                </div>
+
+                <!-- ADMIN DASHBOARD -->
+                <div id="dashboard-section" class="hidden space-y-8">
+                    
+                    <div class="flex justify-between items-center bg-niceBlue-50 p-4 rounded-xl border border-niceBlue-100">
+                        <div>
+                            <span class="text-xs text-niceBlue-500 font-bold uppercase">Status de Autenticação:</span>
+                            <p class="text-sm font-bold text-niceBlue-logo">Administrador Conectado (SQLite DB)</p>
+                        </div>
+                        <button onclick="handleLogout()" class="bg-niceBlue-50 text-niceBlue-logo px-4 py-2 rounded-lg text-sm font-bold hover:bg-niceBlue-100 transition">
+                            Sair do Painel
+                        </button>
+                    </div>
+
+                    <!-- Form Cadastrar/Editar -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="font-logo text-lg font-bold text-niceBlue-logo mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-plus-circle text-niceBlue-500"></i>
+                            <span id="form-title">Cadastrar Novo Produto</span>
+                        </h4>
+
+                        <form id="product-form" onsubmit="handleProductSubmit(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="hidden" id="product-id">
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nome do Produto</label>
+                                <input type="text" id="prod-title" required class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Preço (R$)</label>
+                                <input type="number" step="0.01" id="prod-price" required class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Tamanho</label>
+                                <select id="prod-size" required class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500 bg-white">
+                                    <option value="PP">PP</option>
+                                    <option value="P">P</option>
+                                    <option value="M">M</option>
+                                    <option value="G">G</option>
+                                    <option value="GG">GG</option>
+                                    <option value="36">36</option>
+                                    <option value="38">38</option>
+                                    <option value="40">40</option>
+                                    <option value="42">42</option>
+                                    <option value="Único">Único</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Categoria</label>
+                                <select id="prod-category" required class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500 bg-white">
+                                    <option value="Roupas">Roupas</option>
+                                    <option value="Acessórios">Acessórios</option>
+                                    <option value="Calçados">Calçados</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Subcategoria (Segmento)</label>
+                                <select id="prod-subcategory" required class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500 bg-white">
+                                    <option value="Mulheres">Mulheres</option>
+                                    <option value="Homens">Homens</option>
+                                    <option value="Crianças">Crianças</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Foto da Peça (Upload ou URL)</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="prod-image-url" placeholder="http://link-da-imagem.jpg" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500">
+                                    <label class="cursor-pointer bg-niceBlue-50 text-niceBlue-logo px-3 py-2 rounded-lg text-xs font-bold hover:bg-niceBlue-100 flex items-center gap-1 flex-shrink-0 border border-niceBlue-200">
+                                        <i class="fa-solid fa-upload"></i> Upload
+                                        <input type="file" id="prod-image-file" accept="image/*" class="hidden">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <button type="submit" class="w-full bg-niceBlue-logo text-white py-3 rounded-lg font-bold hover:bg-niceBlue-700 transition shadow-md">Salvar Produto no SQLite</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Alterar Senha -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                        <h4 class="font-logo text-lg font-bold text-niceBlue-logo mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-key text-niceBlue-500"></i> Alterar Senha do Administrador
+                        </h4>
+                        <form onsubmit="handleChangePassword(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Senha Atual</label>
+                                <input type="password" id="curr-pass" required class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Nova Senha</label>
+                                <input type="password" id="new-pass" required class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Confirmar Nova Senha</label>
+                                <input type="password" id="confirm-pass" required class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500">
+                            </div>
+                            <div class="md:col-span-3">
+                                <button type="submit" class="bg-niceBlue-logo text-white px-6 py-2 rounded-lg font-bold text-sm hover:bg-niceBlue-700 transition shadow">Atualizar Senha</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Tabela de Produtos -->
+                    <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                        <div class="p-4 bg-slate-50 border-b border-slate-200 font-bold text-niceBlue-logo text-sm">
+                            Produtos no SQLite
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+                                    <tr>
+                                        <th class="p-3">Foto</th>
+                                        <th class="p-3">Nome</th>
+                                        <th class="p-3">Categoria</th>
+                                        <th class="p-3">Tamanho</th>
+                                        <th class="p-3">Preço</th>
+                                        <th class="p-3 text-right">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-products-table" class="divide-y divide-slate-200">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CARRINHO -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex justify-end">
+        <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col">
+            <div class="p-4 bg-niceBlue-logo text-white flex justify-between items-center">
+                <h3 class="font-logo text-lg font-bold">Meu Carrinho</h3>
+                <button onclick="toggleCartModal()" class="text-slate-300 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="cart-items" class="p-4 flex-grow overflow-y-auto space-y-4">
+            </div>
+            <div class="p-4 border-t border-slate-200 bg-slate-50 space-y-3">
+                <div class="flex justify-between font-bold text-lg text-niceBlue-logo">
+                    <span>Total:</span>
+                    <span id="cart-total">R$ 0,00</span>
+                </div>
+                <button onclick="checkoutWhatsApp()" class="w-full bg-niceBlue-logo text-white py-3.5 rounded-xl font-bold hover:bg-niceBlue-700 transition flex items-center justify-center gap-2 shadow-md">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> Finalizar Pedido no WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let products = [];
+        let cart = JSON.parse(localStorage.getItem('nice_cart')) || [];
+        let activeCategory = '';
+        let activeSubcategory = '';
+        let isAdminLoggedIn = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchProducts();
+            updateCartUI();
+        });
+
+        async function fetchProducts() {
+            try {
+                const res = await fetch('/api/products');
+                products = await res.json();
+                renderProducts();
+                if (isAdminLoggedIn) renderAdminTable();
+            } catch (err) {
+                console.error('Erro ao buscar produtos:', err);
+            }
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            const emptyState = document.getElementById('empty-state');
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const sizeFilter = document.getElementById('size-filter').value;
+            const sortFilter = document.getElementById('sort-filter').value;
+
+            let filtered = products.filter(p => {
+                const matchesCategory = !activeCategory || p.category === activeCategory;
+                const matchesSubcategory = !activeSubcategory || p.subcategory === activeSubcategory;
+                const matchesSearch = p.title.toLowerCase().includes(search);
+                const matchesSize = !sizeFilter || p.size === sizeFilter;
+                return matchesCategory && matchesSubcategory && matchesSearch && matchesSize;
+            });
+
+            if (sortFilter === 'price-asc') filtered.sort((a, b) => a.price - b.price);
+            if (sortFilter === 'price-desc') filtered.sort((a, b) => b.price - a.price);
+
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                filtered.forEach(product => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition duration-300 group flex flex-col border border-slate-200';
+                    card.innerHTML = `
+                        <div class="relative h-64 bg-slate-100 overflow-hidden">
+                            <img src="${product.image}" alt="${product.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <span class="absolute top-3 left-3 bg-niceBlue-logo text-white font-bold px-3 py-1 rounded-full text-xs shadow-md">
+                                Tam: ${product.size}
+                            </span>
+                        </div>
+                        <div class="p-5 flex flex-col flex-grow">
+                            <div class="text-xs text-niceBlue-500 font-bold mb-1 uppercase tracking-wider">${product.category} &bull; ${product.subcategory}</div>
+                            <h3 class="font-serif font-bold text-slate-800 text-lg mb-3 line-clamp-2">${product.title}</h3>
+                            <div class="mt-auto flex items-center justify-between pt-2 border-t border-slate-100">
+                                <div>
+                                    <span class="text-xs text-slate-400 block font-semibold">Valor</span>
+                                    <span class="text-xl font-black text-niceBlue-logo">R$ ${product.price.toFixed(2).replace('.', ',')}</span>
+                                </div>
+                                <button onclick="addToCart(${product.id})" class="bg-niceBlue-logo text-white p-3 rounded-full hover:bg-niceBlue-700 shadow-md transition">
+                                    <i class="fa-solid fa-plus text-base"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            updateFilterBadge();
+        }
+
+        function setCategory(cat) { activeCategory = cat; renderProducts(); }
+        function setSubcategory(subcat) { activeSubcategory = subcat; renderProducts(); }
+        function resetFilters() {
+            activeCategory = '';
+            activeSubcategory = '';
+            document.getElementById('search-input').value = '';
+            document.getElementById('size-filter').value = '';
+            renderProducts();
+        }
+
+        function updateFilterBadge() {
+            const badge = document.getElementById('filter-badge');
+            const status = document.getElementById('filter-status');
+            let parts = [];
+            if (activeCategory) parts.push(activeCategory);
+            if (activeSubcategory) parts.push(activeSubcategory);
+            if (parts.length > 0) {
+                badge.textContent = parts.join(' > ');
+                status.classList.remove('hidden');
+            } else {
+                status.classList.add('hidden');
+            }
+        }
+
+        function openAdminModal() {
+            document.getElementById('admin-modal').classList.remove('hidden');
+            if (isAdminLoggedIn) {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+                renderAdminTable();
+            } else {
+                document.getElementById('login-section').classList.remove('hidden');
+                document.getElementById('dashboard-section').classList.add('hidden');
+            }
+        }
+
+        function closeAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-user').value;
+            const password = document.getElementById('login-pass').value;
+
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (res.ok) {
+                    isAdminLoggedIn = true;
+                    document.getElementById('login-error').classList.add('hidden');
+                    document.getElementById('login-section').classList.add('hidden');
+                    document.getElementById('dashboard-section').classList.remove('hidden');
+                    renderAdminTable();
+                } else {
+                    document.getElementById('login-error').classList.remove('hidden');
+                }
+            } catch (err) {
+                alert('Erro ao tentar conectar com o servidor Node.js/SQLite.');
+            }
+        }
+
+        function handleLogout() {
+            isAdminLoggedIn = false;
+            closeAdminModal();
+        }
+
+        async function handleChangePassword(e) {
+            e.preventDefault();
+            const currPass = document.getElementById('curr-pass').value;
+            const newPass = document.getElementById('new-pass').value;
+            const confP = document.getElementById('confirm-pass').value;
+
+            if (newPass !== confP) return alert('Novas senhas não conferem.');
+
+            try {
+                const res = await fetch('/api/admin/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currPass, newPass })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert(data.message);
+                    e.target.reset();
+                } else {
+                    alert(data.error);
+                }
+            } catch (err) {
+                alert('Erro ao alterar senha.');
+            }
+        }
+
+        async function handleProductSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('product-id').value;
+            const formData = new FormData();
+
+            formData.append('title', document.getElementById('prod-title').value);
+            formData.append('price', document.getElementById('prod-price').value);
+            formData.append('size', document.getElementById('prod-size').value);
+            formData.append('category', document.getElementById('prod-category').value);
+            formData.append('subcategory', document.getElementById('prod-subcategory').value);
+            formData.append('imageUrl', document.getElementById('prod-image-url').value);
+
+            const fileInput = document.getElementById('prod-image-file');
+            if (fileInput.files[0]) {
+                formData.append('imageFile', fileInput.files[0]);
+            }
+
+            const url = id ? `/api/products/${id}` : '/api/products';
+            const method = id ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, { method, body: formData });
+                if (res.ok) {
+                    await fetchProducts();
+                    document.getElementById('product-form').reset();
+                    document.getElementById('product-id').value = '';
+                    document.getElementById('form-title').textContent = 'Cadastrar Novo Produto';
+                    alert(id ? 'Produto atualizado!' : 'Produto salvo no SQLite com sucesso!');
+                }
+            } catch (err) {
+                alert('Erro ao salvar produto.');
+            }
+        }
+
+        function editProduct(id) {
+            const prod = products.find(p => p.id === id);
+            if (!prod) return;
+            document.getElementById('product-id').value = prod.id;
+            document.getElementById('prod-title').value = prod.title;
+            document.getElementById('prod-price').value = prod.price;
+            document.getElementById('prod-size').value = prod.size;
+            document.getElementById('prod-category').value = prod.category;
+            document.getElementById('prod-subcategory').value = prod.subcategory;
+            document.getElementById('prod-image-url').value = prod.image;
+            document.getElementById('form-title').textContent = 'Editar Produto #' + prod.id;
+        }
+
+        async function deleteProduct(id) {
+            if (confirm('Deseja realmente excluir este produto do banco SQLite?')) {
+                try {
+                    const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+                    if (res.ok) fetchProducts();
+                } catch (err) {
+                    alert('Erro ao excluir produto.');
+                }
+            }
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-products-table');
+            tbody.innerHTML = '';
+            products.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3"><img src="${p.image}" class="w-10 h-10 object-cover rounded-lg"></td>
+                    <td class="p-3 font-semibold text-slate-800">${p.title}</td>
+                    <td class="p-3 text-xs text-slate-500">${p.category} / ${p.subcategory}</td>
+                    <td class="p-3 font-bold">${p.size}</td>
+                    <td class="p-3 font-bold text-niceBlue-logo">R$ ${p.price.toFixed(2)}</td>
+                    <td class="p-3 text-right space-x-2">
+                        <button onclick="editProduct(${p.id})" class="text-niceBlue-500 hover:text-niceBlue-900"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteProduct(${p.id})" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function addToCart(id) {
+            const prod = products.find(p => p.id === id);
+            if (prod) {
+                cart.push(prod);
+                localStorage.setItem('nice_cart', JSON.stringify(cart));
+                updateCartUI();
+            }
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('nice_cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-count').textContent = cart.length;
+            const cartItems = document.getElementById('cart-items');
+            cartItems.innerHTML = '';
+            let total = 0;
+            cart.forEach((item, index) => {
+                total += item.price;
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200';
+                div.innerHTML = `
+                    <img src="${item.image}" class="w-12 h-12 object-cover rounded-lg">
+                    <div class="flex-grow">
+                        <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
+                        <div class="text-xs text-slate-500">Tam: ${item.size}</div>
+                        <div class="text-sm font-bold text-niceBlue-logo">R$ ${item.price.toFixed(2)}</div>
+                    </div>
+                    <button onclick="removeFromCart(${index})" class="text-slate-500 hover:text-niceBlue-logo text-sm p-1"><i class="fa-solid fa-trash"></i></button>
+                `;
+                cartItems.appendChild(div);
+            });
+            document.getElementById('cart-total').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        function toggleCartModal() {
+            document.getElementById('cart-modal').classList.toggle('hidden');
+        }
+
+        function checkoutWhatsApp() {
+            if (cart.length === 0) return alert('Seu carrinho está vazio!');
+            let msg = "*Novo Pedido - Brechó Nice*\n\n";
+            let total = 0;
+            cart.forEach((item, i) => {
+                msg += `${i+1}. ${item.title} (Tam: ${item.size}) - R$ ${item.price.toFixed(2)}\n`;
+                total += item.price;
+            });
+            msg += `\n*Total: R$ ${total.toFixed(2)}*`;
+            window.open(`https://wa.me/5511997464313?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
+        }
+    </script>
+</body>
+</html>
