@@ -361,13 +361,16 @@
 
                     <!-- Tabela de Produtos -->
                     <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                        <div class="p-4 bg-slate-50 border-b border-slate-200 font-bold text-niceBlue-logo text-sm">
-                            Produtos no SQLite
+                        <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <span class="font-bold text-niceBlue-logo text-sm">Produtos no SQLite</span>
+                            <input type="search" id="admin-product-search" oninput="renderAdminTable()" placeholder="Buscar por código ou nome..."
+                                   class="w-full sm:w-72 p-2 border rounded-lg text-sm outline-none focus:border-niceBlue-500">
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm">
                                 <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
                                     <tr>
+                                        <th class="p-3">Código</th>
                                         <th class="p-3">Foto</th>
                                         <th class="p-3">Nome</th>
                                         <th class="p-3">Categoria</th>
@@ -441,7 +444,9 @@
             let filtered = products.filter(p => {
                 const matchesCategory = !activeCategory || p.category === activeCategory;
                 const matchesSubcategory = !activeSubcategory || p.subcategory === activeSubcategory;
-                const matchesSearch = p.title.toLowerCase().includes(search);
+                const matchesSearch = p.title.toLowerCase().includes(search) ||
+                    formatProductCode(p.id).toLowerCase().includes(search) ||
+                    String(p.id).includes(search);
                 const matchesSize = !sizeFilter || p.size === sizeFilter;
                 return matchesCategory && matchesSubcategory && matchesSearch && matchesSize;
             });
@@ -463,6 +468,9 @@
                             <img src="${product.image}" alt="${product.title}" class="w-full h-full object-contain">
                             <span class="absolute top-3 left-3 bg-niceBlue-logo text-white font-bold px-3 py-1 rounded-full text-xs shadow-md">
                                 Tam: ${product.size}
+                            </span>
+                            <span class="absolute top-3 right-3 bg-white/95 text-niceBlue-logo font-bold px-3 py-1 rounded-full text-xs shadow-md">
+                                ${formatProductCode(product.id)}
                             </span>
                         </div>
                         <div class="p-5 flex flex-col flex-grow">
@@ -488,6 +496,8 @@
 
         function setCategory(cat) { activeCategory = cat; renderProducts(); }
         function setSubcategory(subcat) { activeSubcategory = subcat; renderProducts(); }
+        function formatProductCode(id) { return `BN-${String(id).padStart(5, '0')}`; }
+
         function resetFilters() {
             activeCategory = '';
             activeSubcategory = '';
@@ -625,7 +635,7 @@
             document.getElementById('prod-category').value = prod.category;
             document.getElementById('prod-subcategory').value = prod.subcategory;
             document.getElementById('prod-image-url').value = prod.image;
-            document.getElementById('form-title').textContent = 'Editar Produto #' + prod.id;
+            document.getElementById('form-title').textContent = 'Editar Produto ' + formatProductCode(prod.id);
         }
 
         async function deleteProduct(id) {
@@ -641,10 +651,18 @@
 
         function renderAdminTable() {
             const tbody = document.getElementById('admin-products-table');
+            const search = document.getElementById('admin-product-search').value.trim().toLowerCase();
             tbody.innerHTML = '';
-            products.forEach(p => {
+            const filteredProducts = products.filter(p =>
+                !search ||
+                formatProductCode(p.id).toLowerCase().includes(search) ||
+                String(p.id).includes(search) ||
+                p.title.toLowerCase().includes(search)
+            );
+            filteredProducts.forEach(p => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
+                    <td class="p-3 font-bold text-niceBlue-logo">${formatProductCode(p.id)}</td>
                     <td class="p-3"><img src="${p.image}" class="w-10 h-10 object-contain rounded-lg bg-slate-100"></td>
                     <td class="p-3 font-semibold text-slate-800">${p.title}</td>
                     <td class="p-3 text-xs text-slate-500">${p.category} / ${p.subcategory}</td>
@@ -687,6 +705,7 @@
                     <img src="${item.image}" class="w-12 h-12 object-contain rounded-lg bg-slate-100 flex-shrink-0">
                     <div class="flex-grow">
                         <h4 class="font-bold text-sm text-slate-800">${item.title}</h4>
+                        <div class="text-xs text-niceBlue-500 font-bold">${formatProductCode(item.id)}</div>
                         <div class="text-xs text-slate-500">Tam: ${item.size}</div>
                         <div class="text-sm font-bold text-niceBlue-logo">R$ ${item.price.toFixed(2)}</div>
                     </div>
@@ -706,7 +725,7 @@
             let msg = "*Novo Pedido - Brechó Nice*\n\n";
             let total = 0;
             cart.forEach((item, i) => {
-                msg += `${i+1}. ${item.title} (Tam: ${item.size}) - R$ ${item.price.toFixed(2)}\n`;
+                msg += `${i+1}. ${formatProductCode(item.id)} - ${item.title} (Tam: ${item.size}) - R$ ${item.price.toFixed(2)}\n`;
                 total += item.price;
             });
             msg += `\n*Total: R$ ${total.toFixed(2)}*`;
