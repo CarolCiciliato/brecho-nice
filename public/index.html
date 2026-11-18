@@ -320,13 +320,14 @@
 
                             <div>
                                 <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Foto da Peça (Upload ou URL)</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="prod-image-url" placeholder="http://link-da-imagem.jpg" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500">
-                                    <label class="cursor-pointer bg-niceBlue-50 text-niceBlue-logo px-3 py-2 rounded-lg text-xs font-bold hover:bg-niceBlue-100 flex items-center gap-1 flex-shrink-0 border border-niceBlue-200">
+                                <div class="flex flex-wrap gap-2">
+                                    <input type="text" id="prod-image-url" placeholder="http://link-da-imagem.jpg" class="flex-1 min-w-0 p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500">
+                                    <button type="button" onclick="openImageSourcePicker()" class="cursor-pointer bg-niceBlue-50 text-niceBlue-logo px-3 py-2 rounded-lg text-xs font-bold hover:bg-niceBlue-100 flex items-center gap-1 flex-shrink-0 border border-niceBlue-200">
                                         <i class="fa-solid fa-upload"></i> Upload
-                                        <input type="file" id="prod-image-file" accept="image/*" class="hidden">
-                                    </label>
+                                    </button>
                                 </div>
+                                <input type="file" id="prod-image-file" accept="image/*" class="hidden">
+                                <input type="file" id="prod-camera-file" accept="image/*" capture="environment" class="hidden">
                             </div>
 
                             <div class="md:col-span-2">
@@ -411,6 +412,25 @@
         </div>
     </div>
 
+    <div id="image-source-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4" onclick="closeImageSourcePicker()">
+        <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6" role="dialog" aria-modal="true" aria-labelledby="image-source-title" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between mb-5">
+                <h3 id="image-source-title" class="font-logo text-lg font-bold text-niceBlue-logo">Adicionar foto do produto</h3>
+                <button type="button" onclick="closeImageSourcePicker()" class="text-slate-500 hover:text-slate-800 text-xl" aria-label="Fechar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <button type="button" onclick="selectProductImageSource('camera')" class="w-full bg-niceBlue-logo text-white py-3 rounded-xl font-bold hover:bg-niceBlue-700 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-camera"></i> Tirar foto agora
+                </button>
+                <button type="button" onclick="selectProductImageSource('gallery')" class="w-full bg-niceBlue-50 text-niceBlue-logo py-3 rounded-xl font-bold hover:bg-niceBlue-100 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-images"></i> Escolher da galeria
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let products = [];
         let cart = JSON.parse(localStorage.getItem('nice_cart')) || [];
@@ -421,7 +441,31 @@
         document.addEventListener('DOMContentLoaded', () => {
             fetchProducts();
             updateCartUI();
+            document.getElementById('prod-image-file').addEventListener('change', () => {
+                if (document.getElementById('prod-image-file').files.length) {
+                    document.getElementById('prod-camera-file').value = '';
+                }
+            });
+            document.getElementById('prod-camera-file').addEventListener('change', () => {
+                if (document.getElementById('prod-camera-file').files.length) {
+                    document.getElementById('prod-image-file').value = '';
+                }
+            });
         });
+
+        function openImageSourcePicker() {
+            document.getElementById('image-source-modal').classList.remove('hidden');
+        }
+
+        function closeImageSourcePicker() {
+            document.getElementById('image-source-modal').classList.add('hidden');
+        }
+
+        function selectProductImageSource(source) {
+            closeImageSourcePicker();
+            const inputId = source === 'camera' ? 'prod-camera-file' : 'prod-image-file';
+            document.getElementById(inputId).click();
+        }
 
         async function fetchProducts() {
             try {
@@ -603,9 +647,11 @@
             formData.append('subcategory', document.getElementById('prod-subcategory').value);
             formData.append('imageUrl', document.getElementById('prod-image-url').value);
 
-            const fileInput = document.getElementById('prod-image-file');
-            if (fileInput.files[0]) {
-                formData.append('imageFile', fileInput.files[0]);
+            const galleryFile = document.getElementById('prod-image-file').files[0];
+            const cameraFile = document.getElementById('prod-camera-file').files[0];
+            const selectedFile = cameraFile || galleryFile;
+            if (selectedFile) {
+                formData.append('imageFile', selectedFile);
             }
 
             const url = id ? `/api/products/${id}` : '/api/products';
