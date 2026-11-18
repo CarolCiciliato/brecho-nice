@@ -39,6 +39,8 @@ As imagens do Brechó Nice ficam na pasta `public/images/`:
 - **Imagem do brechó:** `Imagem do brecho.jpg`
 - **Logo:** `logo.jpg`
 
+Ao enviar uma foto de produto pelo painel, o servidor remove o fundo usando IA local e salva o resultado em JPG com fundo branco. Na primeira utilização, o modelo da IA é baixado; as fotos dos produtos são processadas no próprio servidor e não são enviadas para esse serviço. A dependência de remoção de fundo usa licença AGPL-3.0; verifique as obrigações da licença antes de distribuir ou disponibilizar o sistema como serviço.
+
 ## 🔑 Acesso ao Painel Adm
 - **Usuário:** `admin`
 - **Senha:** `admin123`

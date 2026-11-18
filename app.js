@@ -4,6 +4,8 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const bcrypt = require('bcryptjs');
+const { removeBackground } = require('@imgly/background-removal-node');
+const sharp = require('sharp');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,7 +21,7 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, 'uploads/'),
+    destination: (req, file, cb) => cb(null, uploadsDir),
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const ext = path.extname(file.originalname);
@@ -27,6 +29,35 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage });
+
+async function removeFiles(filePaths) {
+    for (const filePath of filePaths.filter(Boolean)) {
+        try {
+            await fs.promises.unlink(filePath);
+        } catch (err) {
+            if (err.code !== 'ENOENT') console.error('Erro ao remover arquivo temporário:', err.message);
+        }
+    }
+}
+
+async function processProductImage(file) {
+    const outputFilename = path.parse(file.filename).name + '-branco.jpg';
+    const outputPath = path.join(uploadsDir, outputFilename);
+
+    try {
+        const input = await sharp(file.path).png().toBuffer();
+        const image = await removeBackground(new Blob([input], { type: 'image/png' }), { model: 'small' });
+        await sharp(Buffer.from(await image.arrayBuffer()))
+            .flatten({ background: '#ffffff' })
+            .jpeg({ quality: 90 })
+            .toFile(outputPath);
+        await removeFiles([file.path]);
+        return { image: '/uploads/' + outputFilename, path: outputPath };
+    } catch (err) {
+        await removeFiles([outputPath]);
+        throw err;
+    }
+}
 
 const dbPath = path.join(__dirname, 'database.sqlite');
 const db = new sqlite3.Database(dbPath, (err) => {
@@ -106,32 +137,65 @@ app.post('/api/admin/change-password', (req, res) => {
     });
 });
 
-app.post('/api/products', upload.single('imageFile'), (req, res) => {
+app.post('/api/products', upload.single('imageFile'), async (req, res) => {
     const { title, price, size, category, subcategory, imageUrl } = req.body;
     let imagePath = imageUrl;
-    if (req.file) imagePath = '/uploads/' + req.file.filename;
+    let processedImage;
+    if (req.file) {
+        try {
+            processedImage = await processProductImage(req.file);
+            imagePath = processedImage.image;
+        } catch (err) {
+            await removeFiles([req.file.path]);
+            console.error('Erro ao remover o fundo da imagem:', err.message);
+            return res.status(500).json({ error: 'Não foi possível processar a imagem enviada.' });
+        }
+    }
     if (!imagePath) imagePath = 'https://via.placeholder.com/400';
 
     const sql = `INSERT INTO products (title, price, size, category, subcategory, image) VALUES (?, ?, ?, ?, ?, ?)`;
-    db.run(sql, [title, price, size, category, subcategory, imagePath], function(err) {
-        if (err) return res.status(500).json({ error: err.message });
+    db.run(sql, [title, price, size, category, subcategory, imagePath], async function(err) {
+        if (err) {
+            await removeFiles([processedImage && processedImage.path]);
+            return res.status(500).json({ error: err.message });
+        }
         res.json({ success: true, id: this.lastID, image: imagePath });
     });
 });
 
-app.put('/api/products/:id', upload.single('imageFile'), (req, res) => {
+app.put('/api/products/:id', upload.single('imageFile'), async (req, res) => {
     const { id } = req.params;
     const { title, price, size, category, subcategory, imageUrl } = req.body;
 
-    db.get(`SELECT image FROM products WHERE id = ?`, [id], (err, prod) => {
-        if (err || !prod) return res.status(404).json({ error: 'Produto não encontrado' });
+    db.get(`SELECT image FROM products WHERE id = ?`, [id], async (err, prod) => {
+        if (err) {
+            await removeFiles([req.file && req.file.path]);
+            return res.status(500).json({ error: err.message });
+        }
+        if (!prod) {
+            await removeFiles([req.file && req.file.path]);
+            return res.status(404).json({ error: 'Produto não encontrado' });
+        }
         let imagePath = prod.image;
-        if (req.file) imagePath = '/uploads/' + req.file.filename;
+        let processedImage;
+        if (req.file) {
+            try {
+                processedImage = await processProductImage(req.file);
+                imagePath = processedImage.image;
+            } catch (err) {
+                await removeFiles([req.file.path]);
+                console.error('Erro ao remover o fundo da imagem:', err.message);
+                return res.status(500).json({ error: 'Não foi possível processar a imagem enviada.' });
+            }
+        }
         else if (imageUrl) imagePath = imageUrl;
 
         const sql = `UPDATE products SET title = ?, price = ?, size = ?, category = ?, subcategory = ?, image = ? WHERE id = ?`;
-        db.run(sql, [title, price, size, category, subcategory, imagePath, id], function(err) {
-            if (err) return res.status(500).json({ error: err.message });
+        db.run(sql, [title, price, size, category, subcategory, imagePath, id], async function(err) {
+            if (err) {
+                await removeFiles([processedImage && processedImage.path]);
+                return res.status(500).json({ error: err.message });
+            }
             res.json({ success: true });
         });
     });

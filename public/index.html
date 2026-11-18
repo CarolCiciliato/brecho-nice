@@ -613,15 +613,15 @@
 
             try {
                 const res = await fetch(url, { method, body: formData });
-                if (res.ok) {
-                    await fetchProducts();
-                    document.getElementById('product-form').reset();
-                    document.getElementById('product-id').value = '';
-                    document.getElementById('form-title').textContent = 'Cadastrar Novo Produto';
-                    alert(id ? 'Produto atualizado!' : 'Produto salvo no SQLite com sucesso!');
-                }
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Erro ao salvar produto.');
+                await fetchProducts();
+                document.getElementById('product-form').reset();
+                document.getElementById('product-id').value = '';
+                document.getElementById('form-title').textContent = 'Cadastrar Novo Produto';
+                alert(id ? 'Produto atualizado!' : 'Produto salvo no SQLite com sucesso!');
             } catch (err) {
-                alert('Erro ao salvar produto.');
+                alert(err.message || 'Erro ao salvar produto.');
             }
         }
 
