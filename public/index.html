@@ -320,11 +320,15 @@
 
                             <div>
                                 <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Foto da Peça (Upload ou URL)</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="prod-image-url" placeholder="http://link-da-imagem.jpg" class="w-full p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500">
+                                <div class="flex flex-wrap gap-2">
+                                    <input type="text" id="prod-image-url" placeholder="http://link-da-imagem.jpg" class="flex-1 min-w-0 p-2.5 border rounded-lg text-sm outline-none focus:border-niceBlue-500">
                                     <label class="cursor-pointer bg-niceBlue-50 text-niceBlue-logo px-3 py-2 rounded-lg text-xs font-bold hover:bg-niceBlue-100 flex items-center gap-1 flex-shrink-0 border border-niceBlue-200">
                                         <i class="fa-solid fa-upload"></i> Upload
                                         <input type="file" id="prod-image-file" accept="image/*" class="hidden">
+                                    </label>
+                                    <label class="cursor-pointer bg-niceBlue-50 text-niceBlue-logo px-3 py-2 rounded-lg text-xs font-bold hover:bg-niceBlue-100 flex items-center gap-1 flex-shrink-0 border border-niceBlue-200">
+                                        <i class="fa-solid fa-camera"></i> Câmera
+                                        <input type="file" id="prod-camera-file" accept="image/*" capture="environment" class="hidden">
                                     </label>
                                 </div>
                             </div>
@@ -421,6 +425,16 @@
         document.addEventListener('DOMContentLoaded', () => {
             fetchProducts();
             updateCartUI();
+            document.getElementById('prod-image-file').addEventListener('change', () => {
+                if (document.getElementById('prod-image-file').files.length) {
+                    document.getElementById('prod-camera-file').value = '';
+                }
+            });
+            document.getElementById('prod-camera-file').addEventListener('change', () => {
+                if (document.getElementById('prod-camera-file').files.length) {
+                    document.getElementById('prod-image-file').value = '';
+                }
+            });
         });
 
         async function fetchProducts() {
@@ -603,9 +617,11 @@
             formData.append('subcategory', document.getElementById('prod-subcategory').value);
             formData.append('imageUrl', document.getElementById('prod-image-url').value);
 
-            const fileInput = document.getElementById('prod-image-file');
-            if (fileInput.files[0]) {
-                formData.append('imageFile', fileInput.files[0]);
+            const galleryFile = document.getElementById('prod-image-file').files[0];
+            const cameraFile = document.getElementById('prod-camera-file').files[0];
+            const selectedFile = cameraFile || galleryFile;
+            if (selectedFile) {
+                formData.append('imageFile', selectedFile);
             }
 
             const url = id ? `/api/products/${id}` : '/api/products';
